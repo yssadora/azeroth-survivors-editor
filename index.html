@@ -4,8 +4,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Azeroth Survivors Save Editor v1.5.3 | Shilen</title>
-<meta name="description" content="Azeroth Survivors Save Editor v1.5.3: edit talent trees, collect 498 equipment pieces, manage zone progress and perk resets. Runs locally in your browser.">
+<title>Azeroth Survivors Save Editor v1.5.4 | Shilen</title>
+<meta name="description" content="Azeroth Survivors Save Editor v1.5.4: edit talent trees, collect 498 equipment pieces, manage zone progress and perk resets. Runs locally in your browser.">
 <meta name="theme-color" content="#0d1118">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Marcellus+SC&family=Alegreya+Sans:wght@400;500;700&family=JetBrains+Mono:wght@400;500&display=swap">
@@ -75,7 +75,7 @@
 <p class="zm-unavailable" id="zm-unavailable" hidden></p><div class="zm-grid" id="zm-grid"></div>
 <div class="zm-actions"><button class="btn" id="zm-restore">Restore imported zone records</button><label class="zm-target-label">Progress to <select id="zm-target"></select></label><button class="btn" id="zm-through">Clear prerequisites</button><button class="btn" id="zm-complete-all">Mark all 12 cleared</button><span id="zm-status">Import a save to edit progression.</span></div>
 <p class="am-note">Clearing the preceding zones is the in-game-tested way to advance. “Clear prerequisites” marks every zone before your selected destination as cleared, without marking the destination itself. Bulk progression is experimental; classes without an in-game zone record are disabled to protect saves. Make a fresh game backup first.</p></section>
-<section class="panel" id="as151-compat-banner" style="max-width:1180px;margin:18px auto;padding:12px 18px;color:var(--mute);font-size:14px"><strong style="color:var(--accent)">v1.5.3 compatibility:</strong> Supports the third talent specialization, protects uninitialized class progression, and clarifies browser-game compatibility reports. Use a fresh backup before importing.</section>
+<section class="panel" id="as151-compat-banner" style="max-width:1180px;margin:18px auto;padding:12px 18px;color:var(--mute);font-size:14px"><strong style="color:var(--accent)">v1.5.4 compatibility:</strong> Supports the third talent specialization, protects uninitialized class progression, and clarifies browser-game compatibility reports. Use a fresh backup before importing.</section>
 <section class="panel" id="final-export-panel" aria-label="Save all changes"><div class="tag">Final step · Verified save export</div><h2>Save Your Changes</h2><p class="hint">Exports talents (including XP and ranks), equipment and zone progression together. Your original imported save stays unchanged.</p><div id="final-export-actions"></div></section>
 <script>
 (()=>{'use strict';
@@ -341,7 +341,7 @@ function mergeAndVerify(){
 $('am-export').onclick=()=>{if(!loaded())return status('Open a save first');try{
   const {result,count,classes}=mergeAndVerify(),sealed=G(result);
   if(h(sealed)!==result)throw Error('Encryption round-trip failed');
-  download(sealed,'AzerothSurvivors_Editor_v1.5.3.sav');
+  download(sealed,'AzerothSurvivors_Editor_v1.5.4.sav');
   status('✓ Verified export: '+classes+' talent records (XP + ranks preserved), '+count+'/498 equipment IDs.');
   document.dispatchEvent(new CustomEvent('as15:export',{detail:{success:true}}));
 }catch(err){status('Export blocked: '+err.message);console.error(err);document.dispatchEvent(new CustomEvent('as15:export',{detail:{success:false,message:err.message}}));}};
@@ -671,7 +671,7 @@ if(!bridge){console.error('v1.5 UI: save bridge unavailable');return;}
 
 // Premium masthead and in-page navigation; core editor DOM is not cloned or rewritten.
 const hero=document.createElement('header');hero.id='as15-hero';
-hero.innerHTML=`<div class="as15-brand"><div class="as15-sigil" aria-hidden="true">✦</div><div><div class="as15-eyebrow">AZEROTH SURVIVORS <span aria-hidden="true">/</span> COMMUNITY TOOLS</div><h1 class="as15-hero-title">The <em>Save Editor</em></h1><p class="as15-hero-sub">Shape your build. Complete your collection. Chart your journey through Azeroth. Everything stays in your browser.</p><div class="as15-hero-meta"><span class="as15-kicker preview">✦ v1.5.3 UPDATE</span><span class="as15-kicker">◆ Local save editing</span><span class="as15-kicker">○ No account required</span></div></div></div><div class="as15-hero-stats" aria-label="Editor coverage"><div class="as15-stat"><b>09</b><span>Classes</span></div><div class="as15-stat"><b>498</b><span>Gear pieces</span></div><div class="as15-stat"><b>12</b><span>Zones</span></div></div>`;
+hero.innerHTML=`<div class="as15-brand"><div class="as15-sigil" aria-hidden="true">✦</div><div><div class="as15-eyebrow">AZEROTH SURVIVORS <span aria-hidden="true">/</span> COMMUNITY TOOLS</div><h1 class="as15-hero-title">The <em>Save Editor</em></h1><p class="as15-hero-sub">Shape your build. Complete your collection. Chart your journey through Azeroth. Everything stays in your browser.</p><div class="as15-hero-meta"><span class="as15-kicker preview">✦ v1.5.4 UPDATE</span><span class="as15-kicker">◆ Local save editing</span><span class="as15-kicker">○ No account required</span></div></div></div><div class="as15-hero-stats" aria-label="Editor coverage"><div class="as15-stat"><b>09</b><span>Classes</span></div><div class="as15-stat"><b>498</b><span>Gear pieces</span></div><div class="as15-stat"><b>12</b><span>Zones</span></div></div>`;
 document.body.insertBefore(hero,document.body.firstChild);
 const navShell=document.createElement('div');navShell.id='as15-nav-shell';
 navShell.innerHTML=`<nav id="as15-nav" aria-label="Editor sections"><a class="as15-nav-link" href="#section-talents" data-part="talents" aria-current="page"><span class="as15-nav-glyph">✣</span>Talents</a><a class="as15-nav-link" href="#armory-merge" data-part="armory"><span class="as15-nav-glyph">◈</span>Armory</a><a class="as15-nav-link" href="#zone-manager" data-part="zones"><span class="as15-nav-glyph">⌖</span>Zones</a><a class="as15-nav-link" href="#as15-perks" data-part="perks"><span class="as15-nav-glyph">✧</span>Perks</a><div class="as15-nav-right"><label class="as15-current-class" for="as15-class-select">CLASS <select id="as15-class-select" aria-label="Editing class"></select></label><button type="button" id="as15-theme" title="Switch color theme" aria-label="Switch light or dark theme">☼</button></div></nav>`;
@@ -866,6 +866,279 @@ navShell.querySelectorAll('[data-part]').forEach(a=>a.addEventListener('click',(
   navShell.querySelectorAll('[data-part]').forEach(x=>x.setAttribute('aria-current',String(x===a?'page':'false')));
 }));
 setTimeout(()=>{scheduleGearFilter();syncStatus();},200);
+})();
+</script>
+
+<!-- Heroic Stars to gear -->
+
+<style id="as-item-stars-style">
+  #armory-merge td { vertical-align: top; }
+  .am-star-bar {
+    display: flex;
+    gap: 2px;
+    margin-top: 3px;
+    width: 100%;
+  }
+  .am-star-btn {
+    flex: 1;
+    min-width: 0;
+    padding: 2px 0;
+    border-radius: 4px;
+    border: 1px solid var(--line);
+    background: var(--panel);
+    color: var(--mute);
+    font: 600 10px/1.2 var(--mono);
+    cursor: pointer;
+    text-align: center;
+  }
+  .am-star-btn:hover:not(:disabled) {
+    border-color: var(--accent);
+    color: var(--fg);
+  }
+  .am-star-btn.lit {
+    background: var(--accent-soft);
+    border-color: rgba(223, 184, 103, 0.55);
+    color: var(--accent);
+  }
+  .am-star-btn.exact {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: var(--accent-ink);
+  }
+  .am-star-btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+  .am-gear small .am-star-tag {
+    color: var(--accent);
+    font-weight: 700;
+  }
+  .am-card-wrap {
+    display: flex;
+    flex-direction: column;
+  }
+</style>
+
+<script id="as-item-stars-ext">
+(() => {
+  'use strict';
+  const matrix = document.getElementById('am-matrix');
+  const focusedGrid = document.getElementById('as15-focused-grid');
+  const statusEl = document.getElementById('am-status');
+  const resetBtn = document.getElementById('am-reset');
+  if (!matrix) return;
+
+  let trackedPlain = null;
+  let starsDraft = new Map();
+
+  function isLoaded() {
+    return typeof Y !== 'undefined' && Array.isArray(Y.lines) && Y.lines.length > 0 && typeof Y.plain === 'string' && Y.plain.length > 0;
+  }
+
+  function parseStars(lines) {
+    const line = lines.find(l => l.startsWith('stars|'));
+    const map = new Map();
+    if (!line) return map;
+    for (const entry of line.slice(6).split(',').filter(Boolean)) {
+      const [id, val] = entry.split(':');
+      const rank = Number(val);
+      if (id && rank >= 1 && rank <= 5) map.set(id, rank);
+    }
+    return map;
+  }
+
+  function syncFromImportIfNeeded() {
+    if (!isLoaded()) return false;
+    if (trackedPlain !== Y.plain) {
+      trackedPlain = Y.plain;
+      starsDraft = parseStars(Y.plain.split(/\r?\n/));
+    }
+    return true;
+  }
+
+  // Writes stars| into Y.lines (without mutating Y.plain) so e() and mergeAndVerify() pass cleanly
+  function writeStarsToYLines() {
+    if (!isLoaded()) return;
+    const entries = [...starsDraft.entries()]
+      .filter(([, v]) => v >= 1 && v <= 5)
+      .sort((a, b) => Number(a[0]) - Number(b[0]))
+      .map(([k, v]) => `${k}:${v}`);
+
+    const idx = Y.lines.findIndex(l => l.startsWith('stars|'));
+    if (entries.length > 0) {
+      const newLine = 'stars|' + entries.join(',');
+      if (idx >= 0) {
+        Y.lines[idx] = newLine;
+      } else {
+        const at = Y.lines.length && Y.lines[Y.lines.length - 1] === '' ? Y.lines.length - 1 : Y.lines.length;
+        Y.lines.splice(at, 0, newLine);
+        if (Y.lineOf) {
+          for (const k of Object.keys(Y.lineOf)) {
+            if (Y.lineOf[k] >= at) Y.lineOf[k] += 1;
+          }
+        }
+        if (Y.pick && Y.pick.idx >= at) Y.pick.idx += 1;
+      }
+    } else if (idx >= 0) {
+      Y.lines.splice(idx, 1);
+      if (Y.lineOf) {
+        for (const k of Object.keys(Y.lineOf)) {
+          if (Y.lineOf[k] > idx) Y.lineOf[k] -= 1;
+        }
+      }
+      if (Y.pick && Y.pick.idx > idx) Y.pick.idx -= 1;
+    }
+
+    if (typeof n === 'function') n();
+  }
+
+  function setStarForItem(itemId, rank) {
+    if (!syncFromImportIfNeeded()) return;
+    const current = starsDraft.get(itemId) || 0;
+    const nextRank = current === rank ? 0 : rank; // Click active rank again to clear back to 0
+
+    // Ensure the item is marked Collected in items| when assigning stars
+    const gearBtn = matrix.querySelector(`.am-gear[data-id="${itemId}"]`);
+    if (nextRank > 0 && gearBtn && !gearBtn.classList.contains('on')) {
+      gearBtn.click();
+    }
+
+    if (nextRank > 0) starsDraft.set(itemId, nextRank);
+    else starsDraft.delete(itemId);
+
+    writeStarsToYLines();
+    decorateMatrix();
+    decorateFocusedGrid();
+    if (statusEl) {
+      statusEl.textContent = nextRank > 0
+        ? `Item ${itemId} set to +${nextRank}★ Heroic. Export save when finished.`
+        : `Cleared Heroic stars from item ${itemId}.`;
+    }
+  }
+
+  function buildStarBar(itemId, disabled) {
+    const cur = starsDraft.get(itemId) || 0;
+    const bar = document.createElement('div');
+    bar.className = 'am-star-bar';
+    bar.setAttribute('role', 'group');
+    bar.setAttribute('aria-label', `Heroic stars for ${itemId}`);
+
+    for (let i = 1; i <= 5; i++) {
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'am-star-btn' + (i <= cur ? ' lit' : '') + (i === cur ? ' exact' : '');
+      btn.disabled = disabled;
+      btn.textContent = '+' + i;
+      btn.title = cur === i ? `Clear +${i}★ (reset to 0★)` : `Set item to +${i}★ Heroic`;
+      btn.addEventListener('click', ev => {
+        ev.stopPropagation();
+        setStarForItem(itemId, i);
+      });
+      bar.appendChild(btn);
+    }
+    return bar;
+  }
+
+  function decorateMatrix() {
+    syncFromImportIfNeeded();
+    const disabled = !isLoaded();
+    matrix.querySelectorAll('td').forEach(td => {
+      const gearBtn = td.querySelector('.am-gear[data-id]');
+      if (!gearBtn) return;
+      const itemId = gearBtn.dataset.id;
+      const cur = starsDraft.get(itemId) || 0;
+
+      const small = gearBtn.querySelector('small');
+      if (small) {
+        const collected = gearBtn.classList.contains('on');
+        small.innerHTML = collected
+          ? (cur > 0 ? `✓ Collected · <span class="am-star-tag">★${cur}</span>` : '✓ Collected')
+          : '○ Missing';
+      }
+
+      const oldBar = td.querySelector('.am-star-bar');
+      if (oldBar) oldBar.remove();
+      td.appendChild(buildStarBar(itemId, disabled));
+    });
+  }
+
+  function decorateFocusedGrid() {
+    if (!focusedGrid || focusedGrid.dataset.active !== 'true') return;
+    syncFromImportIfNeeded();
+    const disabled = !isLoaded();
+    focusedGrid.querySelectorAll('.as15-item-card[data-gear-id]').forEach(card => {
+      if (card.parentElement?.classList.contains('am-card-wrap')) return;
+      const itemId = card.dataset.gearId;
+      const cur = starsDraft.get(itemId) || 0;
+      const statusSpan = card.querySelector('.as15-item-status');
+      if (statusSpan && card.classList.contains('collected') && cur > 0) {
+        statusSpan.textContent = `✓ Collected (★${cur}) · Click to remove`;
+      }
+      const wrap = document.createElement('div');
+      wrap.className = 'am-card-wrap';
+      card.before(wrap);
+      wrap.append(card, buildStarBar(itemId, disabled));
+    });
+  }
+
+  // Clear an item's stars automatically if the user uncollects the item
+  matrix.addEventListener('click', ev => {
+    const gearBtn = ev.target.closest('.am-gear[data-id]');
+    if (!gearBtn) return;
+    const itemId = gearBtn.dataset.id;
+    queueMicrotask(() => {
+      const updated = matrix.querySelector(`.am-gear[data-id="${itemId}"]`);
+      if (updated && !updated.classList.contains('on') && starsDraft.has(itemId)) {
+        starsDraft.delete(itemId);
+        writeStarsToYLines();
+        decorateMatrix();
+      }
+    });
+  }, true);
+
+  // Restore original imported stars when "Reset equipment to imported save" is clicked
+  if (resetBtn) {
+    resetBtn.addEventListener('click', () => {
+      queueMicrotask(() => {
+        if (!isLoaded()) return;
+        starsDraft = parseStars(Y.plain.split(/\r?\n/));
+        writeStarsToYLines();
+        decorateMatrix();
+        decorateFocusedGrid();
+      });
+    });
+  }
+
+  // Let the bottom export dock know when stars have been modified
+  const bridge = window.__AS_EDITOR_BRIDGE;
+  if (bridge && typeof bridge.snapshot === 'function') {
+    const origSnapshot = bridge.snapshot.bind(bridge);
+    bridge.snapshot = function () {
+      const snap = origSnapshot();
+      if (!snap || !isLoaded()) return snap;
+      const origStarLine = Y.plain.split(/\r?\n/).find(l => l.startsWith('stars|')) || '';
+      const liveStarLine = Y.lines.find(l => l.startsWith('stars|')) || '';
+      if (origStarLine !== liveStarLine && !snap.areas.includes('Equipment')) {
+        snap.areas.push('Equipment');
+      }
+      return snap;
+    };
+  }
+
+  new MutationObserver(decorateMatrix).observe(matrix, { childList: true });
+  if (focusedGrid) {
+    new MutationObserver(decorateFocusedGrid).observe(focusedGrid, { childList: true });
+  }
+
+  setInterval(() => {
+    if (isLoaded() && trackedPlain !== Y.plain) {
+      syncFromImportIfNeeded();
+      decorateMatrix();
+      decorateFocusedGrid();
+    }
+  }, 500);
+
+  decorateMatrix();
 })();
 </script>
 

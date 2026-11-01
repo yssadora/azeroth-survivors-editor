@@ -4,8 +4,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Azeroth Survivors Save Editor v1.5.5 | Shilen</title>
-<meta name="description" content="Azeroth Survivors Save Editor v1.5.5: edit talent trees, collect 498 equipment pieces, manage zone progress and perk resets. Runs locally in your browser.">
+<title>Azeroth Survivors Save Editor v1.5.6 | Shilen</title>
+<meta name="description" content="Azeroth Survivors Save Editor v1.5.6: edit talent trees, collect 498 equipment pieces, manage zone progress and perk resets. Runs locally in your browser.">
 <meta name="theme-color" content="#0d1118">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Marcellus+SC&family=Alegreya+Sans:wght@400;500;700&family=JetBrains+Mono:wght@400;500&display=swap">
@@ -150,7 +150,149 @@ function P(_0x2f5ea5,_0x3df7ec){const _0x3ef45e=_0x17f9ca,_0x34727c=Y[_0x3ef45e(
 <p class="zm-unavailable" id="zm-unavailable" hidden></p><div class="zm-grid" id="zm-grid"></div>
 <div class="zm-actions"><button class="btn" id="zm-restore">Restore imported zone records</button><label class="zm-target-label">Progress to <select id="zm-target"></select></label><button class="btn" id="zm-through">Clear prerequisites</button><button class="btn" id="zm-complete-all">Mark all 12 cleared</button><span id="zm-status">Import a save to edit progression.</span></div>
 <p class="am-note">Clearing the preceding zones is the in-game-tested way to advance. “Clear prerequisites” marks every zone before your selected destination as cleared, without marking the destination itself. Bulk progression is experimental; classes without an in-game zone record are disabled to protect saves. Make a fresh game backup first.</p></section>
-<section class="panel" id="as151-compat-banner" style="max-width:1180px;margin:18px auto;padding:12px 18px;color:var(--mute);font-size:14px"><strong style="color:var(--accent)">v1.5.5 compatibility:</strong> Supports the third talent specialization, protects uninitialized class progression, and clarifies browser-game compatibility reports. Use a fresh backup before importing.</section>
+
+<style id="as-achievement-manager-style">
+#ach-manager {
+  max-width: 1180px;
+  width: calc(100% - 32px);
+  margin: 18px auto;
+  padding: 22px;
+  box-sizing: border-box;
+}
+.ach-header-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+.ach-kpi {
+  font: 500 24px var(--display);
+  color: var(--accent);
+}
+.ach-kpi small {
+  font: 12px var(--mono);
+  color: var(--mute);
+}
+.ach-actions-row {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  align-items: center;
+  margin: 10px 0 16px;
+}
+.ach-tabs {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  border-bottom: 1px solid var(--line);
+  padding-bottom: 10px;
+  margin-bottom: 14px;
+}
+.ach-tab-btn {
+  background: var(--panel2);
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  padding: 6px 14px;
+  font: 600 13px var(--body);
+  color: var(--mute);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+.ach-tab-btn:hover {
+  color: var(--fg);
+  border-color: var(--accent);
+}
+.ach-tab-btn[aria-selected="true"] {
+  background: var(--accent);
+  color: var(--accent-ink);
+  border-color: var(--accent);
+}
+.ach-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 10px;
+}
+.ach-card {
+  background: var(--panel2);
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  cursor: pointer;
+  user-select: none;
+  transition: border-color 0.15s, background 0.15s;
+}
+.ach-card:hover {
+  border-color: var(--accent);
+}
+.ach-card.unlocked {
+  border-color: rgba(115, 217, 165, 0.45);
+  background: linear-gradient(135deg, rgba(115, 217, 165, 0.08), transparent);
+}
+.ach-card-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+}
+.ach-title {
+  font-weight: 700;
+  font-size: 14px;
+  color: var(--fg);
+}
+.ach-pts {
+  font: 600 11px var(--mono);
+  color: var(--accent);
+  padding: 1px 6px;
+  border-radius: 4px;
+  background: var(--accent-soft);
+}
+.ach-desc {
+  font-size: 12px;
+  line-height: 1.35;
+  color: var(--mute);
+}
+.ach-key {
+  font: 10px var(--mono);
+  color: var(--mute);
+  opacity: 0.7;
+  margin-top: 4px;
+}
+@media (max-width: 600px) {
+  #ach-manager { padding: 16px; width: calc(100% - 20px); }
+  .ach-grid { grid-template-columns: 1fr; }
+}
+</style>
+
+<section class="panel" id="ach-manager">
+  <div class="ach-header-bar">
+    <div>
+      <div class="tag">Account Achievements · Extension</div>
+      <h2>Achievements</h2>
+      <p class="hint" style="margin: 4px 0 0;">Toggle individual achievements or use category bulk tools. Export at the bottom of the page when done.</p>
+    </div>
+    <div class="ach-kpi">
+      <span id="ach-count-text">0 / 125</span>
+      <small id="ach-points-text"> · 0 / 3000 pts</small>
+    </div>
+  </div>
+
+  <div class="ach-actions-row">
+    <button type="button" class="btn" id="ach-btn-toggle-cat">Unlock Visible Category</button>
+    <button type="button" class="btn primary" id="ach-btn-all">Unlock All 125 Achievements</button>
+    <button type="button" class="btn" id="ach-btn-reset">Reset to Imported Save</button>
+    <span id="ach-status" class="am-note">Import save to begin.</span>
+  </div>
+
+  <div class="ach-tabs" id="ach-tabs-bar"></div>
+  <div class="ach-grid" id="ach-items-grid"></div>
+</section>
+
+<section class="panel" id="as151-compat-banner" style="max-width:1180px;margin:18px auto;padding:12px 18px;color:var(--mute);font-size:14px"><strong style="color:var(--accent)">v1.5.6 compatibility:</strong> Supports the third talent specialization, protects uninitialized class progression, and clarifies browser-game compatibility reports. Use a fresh backup before importing.</section>
 <section class="panel" id="final-export-panel" aria-label="Save all changes"><div class="tag">Final step · Verified save export</div><h2>Save Your Changes</h2><p class="hint">Exports talents (including XP and ranks), equipment and zone progression together. Your original imported save stays unchanged.</p><div id="final-export-actions"></div></section>
 <script>
 (()=>{'use strict';
@@ -160,6 +302,7 @@ let zoneDraft=null,zoneImport=null;
 function zoneRecord(lines,kind,cls){const line=lines.find(l=>l.startsWith(kind+'|'+cls+'|'));return line?new Set(line.split('|').slice(2).join('|').split(',').filter(Boolean)):new Set()}
 function zoneSync(){if(!loaded())return false;if(zoneImport!==Y.plain){zoneImport=Y.plain;zoneDraft={};}return true}
 function zoneState(cls){if(!zoneSync())return null;if(!zoneDraft[cls])zoneDraft[cls]={beat:zoneRecord(Y.plain.split(/\r?\n/),'beat',cls),open:zoneRecord(Y.plain.split(/\r?\n/),'open',cls)};return zoneDraft[cls]}
+window.zoneState = zoneState;
 function renderZones(){
   const grid=$('zm-grid');if(!grid)return;
   const cls=$('zm-class').value,st=zoneState(cls),active=!!st;
@@ -366,7 +509,7 @@ function validateAccountSafety(original){
   }
 }
 function verifyAccountProgressPreserved(original,exported){
-  const keep=/^(seen|ach|achat|stat|hero|equip|look|perk|pets)\|/;
+  const keep=/^(seen|stat|hero|equip|look|perk|pets)\|/;
   const core=lines=>lines.filter(l=>keep.test(l));
   if(JSON.stringify(core(original))!==JSON.stringify(core(exported)))
     throw Error('Account/Codex/hero record changed unexpectedly; export blocked to protect progress');
@@ -416,7 +559,7 @@ function mergeAndVerify(){
 $('am-export').onclick=()=>{if(!loaded())return status('Open a save first');try{
   const {result,count,classes}=mergeAndVerify(),sealed=G(result);
   if(h(sealed)!==result)throw Error('Encryption round-trip failed');
-  download(sealed,'AzerothSurvivors_Editor_v1.5.5.sav');
+  download(sealed,'AzerothSurvivors_Editor_v1.5.6.sav');
   status('✓ Verified export: '+classes+' talent records (XP + ranks preserved), '+count+'/498 equipment IDs.');
   document.dispatchEvent(new CustomEvent('as15:export',{detail:{success:true}}));
 }catch(err){status('Export blocked: '+err.message);console.error(err);document.dispatchEvent(new CustomEvent('as15:export',{detail:{success:false,message:err.message}}));}};
@@ -746,10 +889,10 @@ if(!bridge){console.error('v1.5 UI: save bridge unavailable');return;}
 
 // Premium masthead and in-page navigation; core editor DOM is not cloned or rewritten.
 const hero=document.createElement('header');hero.id='as15-hero';
-hero.innerHTML=`<div class="as15-brand"><div class="as15-sigil" aria-hidden="true">✦</div><div><div class="as15-eyebrow">AZEROTH SURVIVORS <span aria-hidden="true">/</span> COMMUNITY TOOLS</div><h1 class="as15-hero-title">The <em>Save Editor</em></h1><p class="as15-hero-sub">Shape your build. Complete your collection. Chart your journey through Azeroth. Everything stays in your browser.</p><div class="as15-hero-meta"><span class="as15-kicker preview">✦ v1.5.5 UPDATE</span><span class="as15-kicker">◆ Local save editing</span><span class="as15-kicker">○ No account required</span></div></div></div><div class="as15-hero-stats" aria-label="Editor coverage"><div class="as15-stat"><b>09</b><span>Classes</span></div><div class="as15-stat"><b>498</b><span>Gear pieces</span></div><div class="as15-stat"><b>12</b><span>Zones</span></div></div>`;
+hero.innerHTML=`<div class="as15-brand"><div class="as15-sigil" aria-hidden="true">✦</div><div><div class="as15-eyebrow">AZEROTH SURVIVORS <span aria-hidden="true">/</span> COMMUNITY TOOLS</div><h1 class="as15-hero-title">The <em>Save Editor</em></h1><p class="as15-hero-sub">Shape your build. Complete your collection. Chart your journey through Azeroth. Everything stays in your browser.</p><div class="as15-hero-meta"><span class="as15-kicker preview">✦ v1.5.6 UPDATE</span><span class="as15-kicker">◆ Local save editing</span><span class="as15-kicker">○ No account required</span></div></div></div><div class="as15-hero-stats" aria-label="Editor coverage"><div class="as15-stat"><b>09</b><span>Classes</span></div><div class="as15-stat"><b>498</b><span>Gear pieces</span></div><div class="as15-stat"><b>12</b><span>Zones</span></div></div>`;
 document.body.insertBefore(hero,document.body.firstChild);
 const navShell=document.createElement('div');navShell.id='as15-nav-shell';
-navShell.innerHTML=`<nav id="as15-nav" aria-label="Editor sections"><a class="as15-nav-link" href="#section-talents" data-part="talents" aria-current="page"><span class="as15-nav-glyph">✣</span>Talents</a><a class="as15-nav-link" href="#armory-merge" data-part="armory"><span class="as15-nav-glyph">◈</span>Armory</a><a class="as15-nav-link" href="#zone-manager" data-part="zones"><span class="as15-nav-glyph">⌖</span>Zones</a><a class="as15-nav-link" href="#as15-perks" data-part="perks"><span class="as15-nav-glyph">✧</span>Perks</a><div class="as15-nav-right"><label class="as15-current-class" for="as15-class-select">CLASS <select id="as15-class-select" aria-label="Editing class"></select></label><button type="button" id="as15-theme" title="Switch color theme" aria-label="Switch light or dark theme">☼</button></div></nav>`;
+navShell.innerHTML=`<nav id="as15-nav" aria-label="Editor sections"><a class="as15-nav-link" href="#section-talents" data-part="talents" aria-current="page"><span class="as15-nav-glyph">✣</span>Talents</a><a class="as15-nav-link" href="#armory-merge" data-part="armory"><span class="as15-nav-glyph">◈</span>Armory</a><a class="as15-nav-link" href="#zone-manager" data-part="zones"><span class="as15-nav-glyph">⌖</span>Zones</a><a class="as15-nav-link" href="#ach-manager" data-part="achievements"><span class="as15-nav-glyph">★</span>Achievements</a><a class="as15-nav-link" href="#as15-perks" data-part="perks"><span class="as15-nav-glyph">✧</span>Perks</a><div class="as15-nav-right"><label class="as15-current-class" for="as15-class-select">CLASS <select id="as15-class-select" aria-label="Editing class"></select></label><button type="button" id="as15-theme" title="Switch color theme" aria-label="Switch light or dark theme">☼</button></div></nav>`;
 document.body.insertBefore(navShell,document.querySelector('.wrap'));
 const classSelect=$('as15-class-select');
 for(const [value,label] of [['1','Warrior'],['2','Paladin'],['3','Hunter'],['4','Rogue'],['5','Priest'],['7','Shaman'],['8','Mage'],['9','Warlock'],['11','Druid']])classSelect.add(new Option(label,value));
@@ -926,7 +1069,7 @@ document.addEventListener('keydown',ev=>{
 });
 
 // Update selected section as users scroll, without altering any editor UI.
-const tracked=[['section-talents','talents'],['armory-merge','armory'],['zone-manager','zones'],['as15-perks','perks']];
+const tracked=[['section-talents','talents'],['armory-merge','armory'],['zone-manager','zones'],['ach-manager','achievements'],['as15-perks','perks']];
 const items=tracked.map(([id,part])=>({el:$(id),part}));
 if('IntersectionObserver' in window){
   const ob=new IntersectionObserver(entries=>{
@@ -1214,6 +1357,321 @@ setTimeout(()=>{scheduleGearFilter();syncStatus();},200);
   }, 500);
 
   decorateMatrix();
+})();
+</script>
+
+<!-- Achievements -->
+
+<script id="as-achievement-manager-script">
+(() => {
+  'use strict';
+  const $ = id => document.getElementById(id);
+  const grid = $('ach-items-grid');
+  const tabsBar = $('ach-tabs-bar');
+  const countText = $('ach-count-text');
+  const ptsText = $('ach-points-text');
+  const statusText = $('ach-status');
+  if (!grid || !tabsBar) return;
+
+  const CATALOG = JSON.parse(decodeURIComponent(escape(atob("W3siaWQiOiJ6b25lOmVsd3lubiIsIm5hbWUiOiJFbHd5bm4gRm9yZXN0IiwiY2F0IjoiWm9uZXMiLCJwdHMiOjEwLCJkZXNjIjoiRGVmZWF0IEVkd2luIFZhbkNsZWVmIGluIEVsd3lubiBGb3Jlc3Qgd2l0aCBhbnkgY2xhc3MuIn0seyJpZCI6InpvbmU6ZHVza3dvb2QiLCJuYW1lIjoiRHVza3dvb2QiLCJjYXQiOiJab25lcyIsInB0cyI6MTAsImRlc2MiOiJEZWZlYXQgTW9yYmVudCBGZWwgaW4gRHVza3dvb2Qgd2l0aCBhbnkgY2xhc3MuIn0seyJpZCI6InpvbmU6d3NnIiwibmFtZSI6IldhcnNvbmcgR3VsY2giLCJjYXQiOiJab25lcyIsInB0cyI6MTAsImRlc2MiOiJEZWZlYXQgTG9yZCBLYXp6YWsgaW4gV2Fyc29uZyBHdWxjaCB3aXRoIGFueSBjbGFzcy4ifSx7ImlkIjoiem9uZTp1bmdvcm8iLCJuYW1lIjoiVW4nR29ybyBDcmF0ZXIiLCJjYXQiOiJab25lcyIsInB0cyI6MTAsImRlc2MiOiJEZWZlYXQgS2luZyBNb3NoIGluIFVuJ0dvcm8gQ3JhdGVyIHdpdGggYW55IGNsYXNzLiJ9LHsiaWQiOiJ6b25lOmFiIiwibmFtZSI6IkFyYXRoaSBCYXNpbiIsImNhdCI6IlpvbmVzIiwicHRzIjoxMCwiZGVzYyI6IkRlZmVhdCBMb3JkIEFpZGVuIFBlcmVub2xkZSBpbiBBcmF0aGkgQmFzaW4gd2l0aCBhbnkgY2xhc3MuIn0seyJpZCI6InpvbmU6ZmVyYWxhcyIsIm5hbWUiOiJGZXJhbGFzIiwiY2F0IjoiWm9uZXMiLCJwdHMiOjE1LCJkZXNjIjoiRGVmZWF0IEtpbmcgR29yZG9rIGluIEZlcmFsYXMgd2l0aCBhbnkgY2xhc3MuIn0seyJpZCI6InpvbmU6YXJlbmEiLCJuYW1lIjoiR3VydWJhc2hpIEFyZW5hIiwiY2F0IjoiWm9uZXMiLCJwdHMiOjE1LCJkZXNjIjoiRGVmZWF0IEhha2thciB0aGUgU291bGZsYXllciBpbiBHdXJ1YmFzaGkgQXJlbmEgd2l0aCBhbnkgY2xhc3MuIn0seyJpZCI6InpvbmU6c20iLCJuYW1lIjoiU2NhcmxldCBNb25hc3RlcnkiLCJjYXQiOiJab25lcyIsInB0cyI6MTUsImRlc2MiOiJEZWZlYXQgSGlnaCBJbnF1aXNpdG9yIFdoaXRlbWFuZSBpbiBTY2FybGV0IE1vbmFzdGVyeSB3aXRoIGFueSBjbGFzcy4ifSx7ImlkIjoiem9uZTphdiIsIm5hbWUiOiJBbHRlcmFjIFZhbGxleSIsImNhdCI6IlpvbmVzIiwicHRzIjoxNSwiZGVzYyI6IkRlZmVhdCBBenVyZWdvcyBpbiBBbHRlcmFjIFZhbGxleSB3aXRoIGFueSBjbGFzcy4ifSx7ImlkIjoiem9uZTpicm0iLCJuYW1lIjoiQmxhY2tyb2NrIE1vdW50YWluIiwiY2F0IjoiWm9uZXMiLCJwdHMiOjIwLCJkZXNjIjoiRGVmZWF0IE5lZmFyaWFuIGluIEJsYWNrcm9jayBNb3VudGFpbiB3aXRoIGFueSBjbGFzcy4ifSx7ImlkIjoiem9uZTphcSIsIm5hbWUiOiJHYXRlcyBvZiBBaG4nUWlyYWoiLCJjYXQiOiJab25lcyIsInB0cyI6MjUsImRlc2MiOiJEZWZlYXQgQydUaHVuIGluIEdhdGVzIG9mIEFobidRaXJhaiB3aXRoIGFueSBjbGFzcy4ifSx7ImlkIjoiem9uZTpuYXh4IiwibmFtZSI6Ik5heHhyYW1hcyIsImNhdCI6IlpvbmVzIiwicHRzIjozMCwiZGVzYyI6IkRlZmVhdCBLZWwnVGh1emFkIGluIE5heHhyYW1hcyB3aXRoIGFueSBjbGFzcy4ifSx7ImlkIjoiY2hhbXA6ZWx3eW5uIiwibmFtZSI6IkNoYW1waW9uIG9mIEVsd3lubiBGb3Jlc3QiLCJjYXQiOiJab25lcyIsInB0cyI6MjUsInJlcUFsbCI6ImVsd3lubiIsImRlc2MiOiJEZWZlYXQgRWR3aW4gVmFuQ2xlZWYgaW4gRWx3eW5uIEZvcmVzdCB3aXRoIGFsbCBuaW5lIGNsYXNzZXMuIn0seyJpZCI6ImNoYW1wOmR1c2t3b29kIiwibmFtZSI6IkNoYW1waW9uIG9mIER1c2t3b29kIiwiY2F0IjoiWm9uZXMiLCJwdHMiOjI1LCJyZXFBbGwiOiJkdXNrd29vZCIsImRlc2MiOiJEZWZlYXQgTW9yYmVudCBGZWwgaW4gRHVza3dvb2Qgd2l0aCBhbGwgbmluZSBjbGFzc2VzLiJ9LHsiaWQiOiJjaGFtcDp3c2ciLCJuYW1lIjoiQ2hhbXBpb24gb2YgV2Fyc29uZyBHdWxjaCIsImNhdCI6IlpvbmVzIiwicHRzIjoyNSwicmVxQWxsIjoid3NnIiwiZGVzYyI6IkRlZmVhdCBMb3JkIEthenphayBpbiBXYXJzb25nIEd1bGNoIHdpdGggYWxsIG5pbmUgY2xhc3Nlcy4ifSx7ImlkIjoiY2hhbXA6dW5nb3JvIiwibmFtZSI6IkNoYW1waW9uIG9mIFVuJ0dvcm8gQ3JhdGVyIiwiY2F0IjoiWm9uZXMiLCJwdHMiOjI1LCJyZXFBbGwiOiJ1bmdvcm8iLCJkZXNjIjoiRGVmZWF0IEtpbmcgTW9zaCBpbiBVbidHb3JvIENyYXRlciB3aXRoIGFsbCBuaW5lIGNsYXNzZXMuIn0seyJpZCI6ImNoYW1wOmFiIiwibmFtZSI6IkNoYW1waW9uIG9mIEFyYXRoaSBCYXNpbiIsImNhdCI6IlpvbmVzIiwicHRzIjoyNSwicmVxQWxsIjoiYWIiLCJkZXNjIjoiRGVmZWF0IExvcmQgQWlkZW4gUGVyZW5vbGRlIGluIEFyYXRoaSBCYXNpbiB3aXRoIGFsbCBuaW5lIGNsYXNzZXMuIn0seyJpZCI6ImNoYW1wOmZlcmFsYXMiLCJuYW1lIjoiQ2hhbXBpb24gb2YgRmVyYWxhcyIsImNhdCI6IlpvbmVzIiwicHRzIjoyNSwicmVxQWxsIjoiZmVyYWxhcyIsImRlc2MiOiJEZWZlYXQgS2luZyBHb3Jkb2sgaW4gRmVyYWxhcyB3aXRoIGFsbCBuaW5lIGNsYXNzZXMuIn0seyJpZCI6ImNoYW1wOmFyZW5hIiwibmFtZSI6IkNoYW1waW9uIG9mIEd1cnViYXNoaSBBcmVuYSIsImNhdCI6IlpvbmVzIiwicHRzIjoyNSwicmVxQWxsIjoiYXJlbmEiLCJkZXNjIjoiRGVmZWF0IEhha2thciB0aGUgU291bGZsYXllciBpbiBHdXJ1YmFzaGkgQXJlbmEgd2l0aCBhbGwgbmluZSBjbGFzc2VzLiJ9LHsiaWQiOiJjaGFtcDpzbSIsIm5hbWUiOiJDaGFtcGlvbiBvZiBTY2FybGV0IE1vbmFzdGVyeSIsImNhdCI6IlpvbmVzIiwicHRzIjoyNSwicmVxQWxsIjoic20iLCJkZXNjIjoiRGVmZWF0IEhpZ2ggSW5xdWlzaXRvciBXaGl0ZW1hbmUgaW4gU2NhcmxldCBNb25hc3Rlcnkgd2l0aCBhbGwgbmluZSBjbGFzc2VzLiJ9LHsiaWQiOiJjaGFtcDphdiIsIm5hbWUiOiJDaGFtcGlvbiBvZiBBbHRlcmFjIFZhbGxleSIsImNhdCI6IlpvbmVzIiwicHRzIjoyNSwicmVxQWxsIjoiYXYiLCJkZXNjIjoiRGVmZWF0IEF6dXJlZ29zIGluIEFsdGVyYWMgVmFsbGV5IHdpdGggYWxsIG5pbmUgY2xhc3Nlcy4ifSx7ImlkIjoiY2hhbXA6YnJtIiwibmFtZSI6IkNoYW1waW9uIG9mIEJsYWNrcm9jayBNb3VudGFpbiIsImNhdCI6IlpvbmVzIiwicHRzIjoyNSwicmVxQWxsIjoiYnJtIiwiZGVzYyI6IkRlZmVhdCBOZWZhcmlhbiBpbiBCbGFja3JvY2sgTW91bnRhaW4gd2l0aCBhbGwgbmluZSBjbGFzc2VzLiJ9LHsiaWQiOiJjaGFtcDphcSIsIm5hbWUiOiJDaGFtcGlvbiBvZiBHYXRlcyBvZiBBaG4nUWlyYWoiLCJjYXQiOiJab25lcyIsInB0cyI6MjUsInJlcUFsbCI6ImFxIiwiZGVzYyI6IkRlZmVhdCBDJ1RodW4gaW4gR2F0ZXMgb2YgQWhuJ1FpcmFqIHdpdGggYWxsIG5pbmUgY2xhc3Nlcy4ifSx7ImlkIjoiY2hhbXA6bmF4eCIsIm5hbWUiOiJDaGFtcGlvbiBvZiBOYXh4cmFtYXMiLCJjYXQiOiJab25lcyIsInB0cyI6MjUsInJlcUFsbCI6Im5heHgiLCJkZXNjIjoiRGVmZWF0IEtlbCdUaHV6YWQgaW4gTmF4eHJhbWFzIHdpdGggYWxsIG5pbmUgY2xhc3Nlcy4ifSx7ImlkIjoiY2xhc3M6d2FycmlvciIsIm5hbWUiOiJXYXJyaW9yIFZpY3RvcmlvdXMiLCJjYXQiOiJDbGFzc2VzIiwicHRzIjoxMCwiZGVzYyI6IldpbiBhIHJ1biB3aXRoIGEgV2Fycmlvci4ifSx7ImlkIjoiY2xhc3M6cGFsYWRpbiIsIm5hbWUiOiJQYWxhZGluIFZpY3RvcmlvdXMiLCJjYXQiOiJDbGFzc2VzIiwicHRzIjoxMCwiZGVzYyI6IldpbiBhIHJ1biB3aXRoIGEgUGFsYWRpbi4ifSx7ImlkIjoiY2xhc3M6aHVudGVyIiwibmFtZSI6Ikh1bnRlciBWaWN0b3Jpb3VzIiwiY2F0IjoiQ2xhc3NlcyIsInB0cyI6MTAsImRlc2MiOiJXaW4gYSBydW4gd2l0aCBhIEh1bnRlci4ifSx7ImlkIjoiY2xhc3M6cm9ndWUiLCJuYW1lIjoiUm9ndWUgVmljdG9yaW91cyIsImNhdCI6IkNsYXNzZXMiLCJwdHMiOjEwLCJkZXNjIjoiV2luIGEgcnVuIHdpdGggYSBSb2d1ZS4ifSx7ImlkIjoiY2xhc3M6cHJpZXN0IiwibmFtZSI6IlByaWVzdCBWaWN0b3Jpb3VzIiwiY2F0IjoiQ2xhc3NlcyIsInB0cyI6MTAsImRlc2MiOiJXaW4gYSBydW4gd2l0aCBhIFByaWVzdC4ifSx7ImlkIjoiY2xhc3M6c2hhbWFuIiwibmFtZSI6IlNoYW1hbiBWaWN0b3Jpb3VzIiwiY2F0IjoiQ2xhc3NlcyIsInB0cyI6MTAsImRlc2MiOiJXaW4gYSBydW4gd2l0aCBhIFNoYW1hbi4ifSx7ImlkIjoiY2xhc3M6bWFnZSIsIm5hbWUiOiJNYWdlIFZpY3RvcmlvdXMiLCJjYXQiOiJDbGFzc2VzIiwicHRzIjoxMCwiZGVzYyI6IldpbiBhIHJ1biB3aXRoIGEgTWFnZS4ifSx7ImlkIjoiY2xhc3M6d2FybG9jayIsIm5hbWUiOiJXYXJsb2NrIFZpY3RvcmlvdXMiLCJjYXQiOiJDbGFzc2VzIiwicHRzIjoxMCwiZGVzYyI6IldpbiBhIHJ1biB3aXRoIGEgV2FybG9jay4ifSx7ImlkIjoiY2xhc3M6ZHJ1aWQiLCJuYW1lIjoiRHJ1aWQgVmljdG9yaW91cyIsImNhdCI6IkNsYXNzZXMiLCJwdHMiOjEwLCJkZXNjIjoiV2luIGEgcnVuIHdpdGggYSBEcnVpZC4ifSx7ImlkIjoiYXE6d2FycmlvciIsImV4dHJhS2V5cyI6WyJzY2FyYWI6d2FycmlvciIsInNjYXJhYjoxIiwiYXE6MSJdLCJuYW1lIjoiV2FycmlvciBvZiB0aGUgU2NhcmFiIFdhbGwiLCJjYXQiOiJDbGFzc2VzIiwicHRzIjoyNSwicmVxIjp7ImNscyI6IjEiLCJ6b25lIjoiYXEiLCJsYWJlbCI6IkdhdGVzIG9mIEFobidRaXJhaiAoV2FycmlvcikifSwiZGVzYyI6IkRlZmVhdCBDJ1RodW4gYXQgR2F0ZXMgb2YgQWhuJ1FpcmFqIHdpdGggYSBXYXJyaW9yLiJ9LHsiaWQiOiJhcTpwYWxhZGluIiwiZXh0cmFLZXlzIjpbInNjYXJhYjpwYWxhZGluIiwic2NhcmFiOjIiLCJhcToyIl0sIm5hbWUiOiJQYWxhZGluIG9mIHRoZSBTY2FyYWIgV2FsbCIsImNhdCI6IkNsYXNzZXMiLCJwdHMiOjI1LCJyZXEiOnsiY2xzIjoiMiIsInpvbmUiOiJhcSIsImxhYmVsIjoiR2F0ZXMgb2YgQWhuJ1FpcmFqIChQYWxhZGluKSJ9LCJkZXNjIjoiRGVmZWF0IEMnVGh1biBhdCBHYXRlcyBvZiBBaG4nUWlyYWogd2l0aCBhIFBhbGFkaW4uIn0seyJpZCI6ImFxOmh1bnRlciIsImV4dHJhS2V5cyI6WyJzY2FyYWI6aHVudGVyIiwic2NhcmFiOjMiLCJhcTozIl0sIm5hbWUiOiJIdW50ZXIgb2YgdGhlIFNjYXJhYiBXYWxsIiwiY2F0IjoiQ2xhc3NlcyIsInB0cyI6MjUsInJlcSI6eyJjbHMiOiIzIiwiem9uZSI6ImFxIiwibGFiZWwiOiJHYXRlcyBvZiBBaG4nUWlyYWogKEh1bnRlcikifSwiZGVzYyI6IkRlZmVhdCBDJ1RodW4gYXQgR2F0ZXMgb2YgQWhuJ1FpcmFqIHdpdGggYSBIdW50ZXIuIn0seyJpZCI6ImFxOnJvZ3VlIiwiZXh0cmFLZXlzIjpbInNjYXJhYjpyb2d1ZSIsInNjYXJhYjo0IiwiYXE6NCJdLCJuYW1lIjoiUm9ndWUgb2YgdGhlIFNjYXJhYiBXYWxsIiwiY2F0IjoiQ2xhc3NlcyIsInB0cyI6MjUsInJlcSI6eyJjbHMiOiI0Iiwiem9uZSI6ImFxIiwibGFiZWwiOiJHYXRlcyBvZiBBaG4nUWlyYWogKFJvZ3VlKSJ9LCJkZXNjIjoiRGVmZWF0IEMnVGh1biBhdCBHYXRlcyBvZiBBaG4nUWlyYWogd2l0aCBhIFJvZ3VlLiJ9LHsiaWQiOiJhcTpwcmllc3QiLCJleHRyYUtleXMiOlsic2NhcmFiOnByaWVzdCIsInNjYXJhYjo1IiwiYXE6NSJdLCJuYW1lIjoiUHJpZXN0IG9mIHRoZSBTY2FyYWIgV2FsbCIsImNhdCI6IkNsYXNzZXMiLCJwdHMiOjI1LCJyZXEiOnsiY2xzIjoiNSIsInpvbmUiOiJhcSIsImxhYmVsIjoiR2F0ZXMgb2YgQWhuJ1FpcmFqIChQcmllc3QpIn0sImRlc2MiOiJEZWZlYXQgQydUaHVuIGF0IEdhdGVzIG9mIEFobidRaXJhaiB3aXRoIGEgUHJpZXN0LiJ9LHsiaWQiOiJhcTpzaGFtYW4iLCJleHRyYUtleXMiOlsic2NhcmFiOnNoYW1hbiIsInNjYXJhYjo3IiwiYXE6NyJdLCJuYW1lIjoiU2hhbWFuIG9mIHRoZSBTY2FyYWIgV2FsbCIsImNhdCI6IkNsYXNzZXMiLCJwdHMiOjI1LCJyZXEiOnsiY2xzIjoiNyIsInpvbmUiOiJhcSIsImxhYmVsIjoiR2F0ZXMgb2YgQWhuJ1FpcmFqIChTaGFtYW4pIn0sImRlc2MiOiJEZWZlYXQgQydUaHVuIGF0IEdhdGVzIG9mIEFobidRaXJhaiB3aXRoIGEgU2hhbWFuLiJ9LHsiaWQiOiJhcTptYWdlIiwiZXh0cmFLZXlzIjpbInNjYXJhYjptYWdlIiwic2NhcmFiOjgiLCJhcTo4Il0sIm5hbWUiOiJNYWdlIG9mIHRoZSBTY2FyYWIgV2FsbCIsImNhdCI6IkNsYXNzZXMiLCJwdHMiOjI1LCJyZXEiOnsiY2xzIjoiOCIsInpvbmUiOiJhcSIsImxhYmVsIjoiR2F0ZXMgb2YgQWhuJ1FpcmFqIChNYWdlKSJ9LCJkZXNjIjoiRGVmZWF0IEMnVGh1biBhdCBHYXRlcyBvZiBBaG4nUWlyYWogd2l0aCBhIE1hZ2UuIn0seyJpZCI6ImFxOndhcmxvY2siLCJleHRyYUtleXMiOlsic2NhcmFiOndhcmxvY2siLCJzY2FyYWI6OSIsImFxOjkiXSwibmFtZSI6IldhcmxvY2sgb2YgdGhlIFNjYXJhYiBXYWxsIiwiY2F0IjoiQ2xhc3NlcyIsInB0cyI6MjUsInJlcSI6eyJjbHMiOiI5Iiwiem9uZSI6ImFxIiwibGFiZWwiOiJHYXRlcyBvZiBBaG4nUWlyYWogKFdhcmxvY2spIn0sImRlc2MiOiJEZWZlYXQgQydUaHVuIGF0IEdhdGVzIG9mIEFobidRaXJhaiB3aXRoIGEgV2FybG9jay4ifSx7ImlkIjoiYXE6ZHJ1aWQiLCJleHRyYUtleXMiOlsic2NhcmFiOmRydWlkIiwic2NhcmFiOjExIiwiYXE6MTEiXSwibmFtZSI6IkRydWlkIG9mIHRoZSBTY2FyYWIgV2FsbCIsImNhdCI6IkNsYXNzZXMiLCJwdHMiOjI1LCJyZXEiOnsiY2xzIjoiMTEiLCJ6b25lIjoiYXEiLCJsYWJlbCI6IkdhdGVzIG9mIEFobidRaXJhaiAoRHJ1aWQpIn0sImRlc2MiOiJEZWZlYXQgQydUaHVuIGF0IEdhdGVzIG9mIEFobidRaXJhaiB3aXRoIGEgRHJ1aWQuIn0seyJpZCI6InRhbGVudHM6MSIsIm5hbWUiOiJGdWxseSBUYWxlbnRlZCIsImNhdCI6IkNsYXNzZXMiLCJwdHMiOjI1LCJkZXNjIjoiRWFybiBhbGwgNTEgdGFsZW50IHBvaW50cyB3aXRoIG9uZSBjbGFzcy4ifSx7ImlkIjoidGFsZW50czphbGwiLCJuYW1lIjoiTWFzdGVyIG9mIEFsbCIsImNhdCI6IkNsYXNzZXMiLCJwdHMiOjUwLCJkZXNjIjoiRWFybiBhbGwgNTEgdGFsZW50IHBvaW50cyB3aXRoIGV2ZXJ5IGNsYXNzLiJ9LHsiaWQiOiJwaWVjZXM6MjUiLCJuYW1lIjoiQ29sbGVjdG9yIiwiY2F0IjoiQ29sbGVjdGlvbiIsInB0cyI6MTAsImRlc2MiOiJDb2xsZWN0IDI1IHBpZWNlcyBvZiBnZWFyLCBvZiBhbnkgY2xhc3MuIn0seyJpZCI6InBpZWNlczoxMDAiLCJuYW1lIjoiSG9hcmRlciIsImNhdCI6IkNvbGxlY3Rpb24iLCJwdHMiOjEwLCJkZXNjIjoiQ29sbGVjdCAxMDAgcGllY2VzIG9mIGdlYXIsIG9mIGFueSBjbGFzcy4ifSx7ImlkIjoicGllY2VzOjI1MCIsIm5hbWUiOiJDdXJhdG9yIiwiY2F0IjoiQ29sbGVjdGlvbiIsInB0cyI6MjUsImRlc2MiOiJDb2xsZWN0IDI1MCBwaWVjZXMgb2YgZ2Vhciwgb2YgYW55IGNsYXNzLiJ9LHsiaWQiOiJwaWVjZXM6YWxsIiwibmFtZSI6IlRoZSBXaG9sZSBBcm1vcnkiLCJjYXQiOiJDb2xsZWN0aW9uIiwicHRzIjo1MCwiZGVzYyI6IkNvbGxlY3QgZXZlcnkgcGllY2Ugb2YgZ2VhciBvZiBldmVyeSBjbGFzcy4ifSx7ImlkIjoibGVnZW5kYXJ5Om9uZSIsIm5hbWUiOiJMZWdlbmRhcnkiLCJjYXQiOiJDb2xsZWN0aW9uIiwicHRzIjoyNSwiZGVzYyI6IkNvbGxlY3QgZXZlcnkgbGVnZW5kYXJ5IHBpZWNlIG9mIG9uZSBjbGFzcy4ifSx7ImlkIjoiY29kZXg6aGFsZiIsIm5hbWUiOiJKZXdlbGVyJ3MgRXllIiwiY2F0IjoiQ29sbGVjdGlvbiIsInB0cyI6MTAsImRlc2MiOiJTZWUgaGFsZiBvZiB0aGUgY29kZXgncyByaW5ncywgdHJpbmtldHMgYW5kIGFtdWxldHMuIn0seyJpZCI6ImNvZGV4OmFsbCIsIm5hbWUiOiJFdmVyeSBCYXVibGUiLCJjYXQiOiJDb2xsZWN0aW9uIiwicHRzIjoyNSwiZGVzYyI6IlNlZSBldmVyeSByaW5nLCB0cmlua2V0IGFuZCBhbXVsZXQgaW4gdGhlIGNvZGV4LiJ9LHsiaWQiOiJzdGFyczoxIiwibmFtZSI6IlBvbGlzaGVkIiwiY2F0IjoiQ29sbGVjdGlvbiIsInB0cyI6MTAsImRlc2MiOiJVcGdyYWRlIGEgcGllY2Ugb2YgZ2VhciB0byAxIHN0YXIuIn0seyJpZCI6InN0YXJzOjMiLCJuYW1lIjoiSG9uZWQiLCJjYXQiOiJDb2xsZWN0aW9uIiwicHRzIjoxMCwiZGVzYyI6IlVwZ3JhZGUgYSBwaWVjZSBvZiBnZWFyIHRvIDMgc3RhcnMuIn0seyJpZCI6InNldGJvbnVzIiwibmFtZSI6Ik1hdGNoZWQiLCJjYXQiOiJDb2xsZWN0aW9uIiwicHRzIjoxMCwiZGVzYyI6Ik9wZW4gYSBzZXQgYm9udXM6IGZvdXIgYXJtb3IgcGllY2VzIG9mIG9uZSBzZXQgYXQgMSBzdGFyIG9yIG1vcmUuIn0seyJpZCI6InNoYXJlZF93aXNkb20iLCJuYW1lIjoiU2hhcmVkIFdpc2RvbSIsImNhdCI6IkNvbGxlY3Rpb24iLCJwdHMiOjI1LCJkZXNjIjoiSGF2ZSBvbmUgc2V0J3MgZWlnaHQgYXJtb3IgcGllY2VzIGF0IDEgc3RhciBvciBtb3JlIG9uIGV2ZXJ5IGNsYXNzLiJ9LHsiaWQiOiJzZXQ4IiwibmFtZSI6IlN1aXRlZCBVcCIsImNhdCI6IkNvbGxlY3Rpb24iLCJwdHMiOjEwLCJkZXNjIjoiT3BlbiBhbiA4LXBpZWNlIHNldCBib251czogb25lIHNldCdzIGVpZ2h0IGFybW9yIHBpZWNlcyBhdCAzIHN0YXJzIG9yIG1vcmUuIn0seyJpZCI6IndhcmRyb2JlOmFsbCIsIm5hbWUiOiJXYXJkcm9iZSIsImNhdCI6IkNvbGxlY3Rpb24iLCJwdHMiOjI1LCJkZXNjIjoiT3BlbiB0aGUgOC1waWVjZSBib251cyBvZiBhbGwgc2l4IHNldHMgd2l0aCBvbmUgY2xhc3MuIn0seyJpZCI6ImFybW9yeTpsZWdlbmRzIiwibmFtZSI6IkFybW9yeSBvZiBMZWdlbmRzIiwiY2F0IjoiQ29sbGVjdGlvbiIsInB0cyI6NTAsImRlc2MiOiJPcGVuIHRoZSBsZWdlbmRhcnkgc2V0J3MgOC1waWVjZSBib251cyB3aXRoIGV2ZXJ5IGNsYXNzLiJ9LHsiaWQiOiJmZWF0Omh1bWJsZSIsIm5hbWUiOiJIdW1ibGUgQmVnaW5uaW5ncyIsImNhdCI6IkZlYXRzIiwicHRzIjoyNSwiZGVzYyI6IkJlYXQgTmF4eHJhbWFzIHdlYXJpbmcgYSBjb21tb24gc2V0J3MgOC1waWVjZSBib251cy4ifSx7ImlkIjoiZW5kbGVzczpib3NzZXMzIiwibmFtZSI6Ik92ZXJ0aW1lIChCb3NzZXMpIiwiY2F0IjoiRmVhdHMiLCJwdHMiOjEwLCJkZXNjIjoiU2xheSAzIGJvc3NlcyBpbiBlbmRsZXNzIGluIG9uZSBydW4uIn0seyJpZCI6ImVuZGxlc3M6Ym9zc2VzNiIsIm5hbWUiOiJOZXZlciBFbmRpbmciLCJjYXQiOiJGZWF0cyIsInB0cyI6MjUsImRlc2MiOiJTbGF5IDYgYm9zc2VzIGluIGVuZGxlc3MgaW4gb25lIHJ1bi4ifSx7ImlkIjoiZmVhdDpoYXphcmQiLCJuYW1lIjoiSGF6YXJkIFBheSIsImNhdCI6IkZlYXRzIiwicHRzIjoyNSwiZGVzYyI6IkVhcm4gMTAwIG1hcmtzIGluIG9uZSBydW4uIn0seyJpZCI6ImZlYXQ6ZGFuZ2VyIiwibmFtZSI6IkRhbmdlciBNb25leSIsImNhdCI6IkZlYXRzIiwicHRzIjo1MCwiZGVzYyI6IkVhcm4gNTAgbWFya3MgZnJvbSBvbmUgYm9zcy4ifSx7ImlkIjoiZmVhdDpraWxsczI1MDAiLCJuYW1lIjoiU2xhdWdodGVyaG91c2UiLCJjYXQiOiJGZWF0cyIsInB0cyI6MTAsImRlc2MiOiJTbGF5IDIsNTAwIGVuZW1pZXMgaW4gb25lIHJ1bi4ifSx7ImlkIjoiZmVhdDpraWxsczYwMDAiLCJuYW1lIjoiQ2FybmFnZSIsImNhdCI6IkZlYXRzIiwicHRzIjoyNSwiZGVzYyI6IlNsYXkgNiwwMDAgZW5lbWllcyBpbiBvbmUgcnVuLiJ9LHsiaWQiOiJmZWF0OmxhaXJzIiwibmFtZSI6IkxhaXIgQnJlYWtlciIsImNhdCI6IkZlYXRzIiwicHRzIjoyNSwiZGVzYyI6IlNsYXkgZm91ciBndWFyZGlhbnMgYmVmb3JlIDg6MDAgaW4gb25lIHJ1bi4ifSx7ImlkIjoiZW5kbGVzczpzdXJ2aXZlMjUiLCJuYW1lIjoiT3ZlcnRpbWUgKFN1cnZpdmUpIiwiY2F0IjoiRmVhdHMiLCJwdHMiOjEwLCJkZXNjIjoiU3Vydml2ZSB0byAyNTowMCBpbiBlbmRsZXNzIG1vZGUuIn0seyJpZCI6ImVuZGxlc3M6c3Vydml2ZTMwIiwibmFtZSI6IlVuZW5kaW5nIiwiY2F0IjoiRmVhdHMiLCJwdHMiOjI1LCJkZXNjIjoiU3Vydml2ZSB0byAzMDowMCBpbiBlbmRsZXNzIG1vZGUuIn0seyJpZCI6ImVuZGxlc3M6c3Vydml2ZTQwIiwibmFtZSI6IkRlYXRobGVzcyBIb3VyIiwiY2F0IjoiRmVhdHMiLCJwdHMiOjUwLCJkZXNjIjoiU3Vydml2ZSB0byA0MDowMCBpbiBlbmRsZXNzIG1vZGUuIn0seyJpZCI6ImZlYXQ6YmFyZSIsIm5hbWUiOiJCYXJlIEtudWNrbGVzIiwiY2F0IjoiRmVhdHMiLCJwdHMiOjI1LCJkZXNjIjoiV2luIGEgcnVuIHdlYXJpbmcgbm8gZ2Vhci4ifSx7ImlkIjoiZmVhdDp0aHJpZnR5IiwibmFtZSI6IlRocmlmdHkiLCJjYXQiOiJGZWF0cyIsInB0cyI6MjUsImRlc2MiOiJXaW4gYSBydW4gd2l0aG91dCBidXlpbmcgYSBjYWNoZS4ifSx7ImlkIjoiZmVhdDpvZGRzIiwibmFtZSI6IkFnYWluc3QgdGhlIE9kZHMiLCJjYXQiOiJGZWF0cyIsInB0cyI6NTAsImRlc2MiOiJXaW4gYSBydW4gb24gSGVyb2ljIElJSSBvciBoYXJkZXIuIn0seyJpZCI6ImZlYXQ6bm91IiwiZXh0cmFLZXlzIjpbImZlYXQ6c2FwcGhpcm9uIiwiZmVhdDpmcm9zdGJvbHQiXSwibmFtZSI6Im5vIHUiLCJjYXQiOiJGZWF0cyIsInB0cyI6MjUsImRlc2MiOiJTbGF5IFNhcHBoaXJvbiB3aXRoIGEgRnJvc3Rib2x0IGFzIHRoZSBraWxsaW5nIGJsb3cuIn0seyJpZCI6ImZlYXQ6c3BpbiIsImV4dHJhS2V5cyI6WyJmZWF0Omhlcm9kIiwiZmVhdDp3aGlybHdpbmQiLCJmZWF0OnNwaW5fdG9fd2luIl0sIm5hbWUiOiJTcGluIHRvIFdpbiIsImNhdCI6IkZlYXRzIiwicHRzIjoyNSwiZGVzYyI6IkRlZmVhdCBIZXJvZCB3aXRoIFdoaXJsd2luZC4ifSx7ImlkIjoiZmVhdDpoYWtrYXIiLCJleHRyYUtleXMiOlsiZmVhdDpkcmFpbmxpZmUiLCJmZWF0Omhha2thcl9kcmFpbiJdLCJuYW1lIjoiU3VjayBJdCwgSGFra2FyISIsImNhdCI6IkZlYXRzIiwicHRzIjoyNSwiZGVzYyI6IkRlZmVhdCBIYWtrYXIgd2l0aCBEcmFpbiBMaWZlLiJ9LHsiaWQiOiJmZWF0OmJhZGRyYWdvbiIsImV4dHJhS2V5cyI6WyJmZWF0Om5lZmFyaWFuIiwiZmVhdDpuZWZhcmlhbl9wZXQiXSwibmFtZSI6IkJhZCBEcmFnb24hIiwiY2F0IjoiRmVhdHMiLCJwdHMiOjI1LCJkZXNjIjoiSGF2ZSBhIHN1bW1vbmVkIHBldCBkZWxpdmVyIHRoZSBraWxsaW5nIGJsb3cgdG8gTmVmYXJpYW4uIn0seyJpZCI6ImZlYXQ6Y2FyYW1iYSIsImV4dHJhS2V5cyI6WyJmZWF0OmN0aHVuIiwiZmVhdDpjdGh1bl9ub2RtZyJdLCJuYW1lIjoiRXllIENhcmFtYmEhIiwiY2F0IjoiRmVhdHMiLCJwdHMiOjUwLCJkZXNjIjoiRGVmZWF0IEMnVGh1biB3aXRob3V0IHRha2luZyBhbnkgZGFtYWdlIGZyb20gaGltLiJ9LHsiaWQiOiJmZWF0OmZpcmVkIiwiZXh0cmFLZXlzIjpbImZlYXQ6dmFuY2xlZWYiLCJmZWF0OnZhbmNsZWVmX2ZpcmUiXSwibmFtZSI6IllvdSdyZSBGaXJlZCIsImNhdCI6IkZlYXRzIiwicHRzIjoxMCwiZGVzYyI6IkRlZmVhdCBFZHdpbiBWYW5DbGVlZiB3aXRoIGEgRmlyZSBzcGVsbC4ifSx7ImlkIjoiZmVhdDpzdGl0Y2hlcyIsImV4dHJhS2V5cyI6WyJmZWF0OnN0aXRjaGVzX2JsZWVkIl0sIm5hbWUiOiJTdGl0Y2hlcyBHZXQgU3RpdGNoZXMiLCJjYXQiOiJGZWF0cyIsInB0cyI6MTAsImRlc2MiOiJEZWZlYXQgU3RpdGNoZXMgd2l0aCBhIEJsZWVkIGVmZmVjdC4ifSx7ImlkIjoiZmVhdDpzYXRhbmthenphayIsImV4dHJhS2V5cyI6WyJmZWF0OmthenphayIsImZlYXQ6a2F6emFrX2hvbHkiXSwibmFtZSI6Ik5vdCBUb2RheSwgU2F0YW4iLCJjYXQiOiJGZWF0cyIsInB0cyI6MjUsImRlc2MiOiJEZWZlYXQgTG9yZCBLYXp6YWsgd2l0aCBIb2x5IGRhbWFnZS4ifSx7ImlkIjoiZmVhdDptb3NocGV0IiwiZXh0cmFLZXlzIjpbImZlYXQ6bW9zaCIsImZlYXQ6bW9zaF9wZXQiXSwibmFtZSI6IkNsZXZlciBHaXJsIiwiY2F0IjoiRmVhdHMiLCJwdHMiOjI1LCJkZXNjIjoiSGF2ZSBhIHN1bW1vbmVkIHBldCBkZWxpdmVyIHRoZSBraWxsaW5nIGJsb3cgdG8gS2luZyBNb3NoLiJ9LHsiaWQiOiJmZWF0Omtvdm9yayIsImV4dHJhS2V5cyI6WyJmZWF0Omtvdm9ya19tZWxlZSJdLCJuYW1lIjoiQm9uayB0aGUgQm9ua2VyIiwiY2F0IjoiRmVhdHMiLCJwdHMiOjEwLCJkZXNjIjoiRGVmZWF0IEtvdm9yayB3aXRoIGEgbWVsZWUgYXR0YWNrLiJ9LHsiaWQiOiJmZWF0OmdvcmRva3JlZmxlY3QiLCJleHRyYUtleXMiOlsiZmVhdDpnb3Jkb2siLCJmZWF0OmdvcmRva19yZWZsZWN0Il0sIm5hbWUiOiJTdG9wIEhpdHRpbmcgWW91cnNlbGYiLCJjYXQiOiJGZWF0cyIsInB0cyI6MjUsImRlc2MiOiJEZWZlYXQgS2luZyBHb3Jkb2sgd2l0aCByZWZsZWN0ZWQgZGFtYWdlIGZyb20gU2hhbWFuJ3MgTGlnaHRuaW5nIFNoaWVsZCwgRHJ1aWQncyBUaG9ybnMsIG9yIFBhbGFkaW4ncyBIb2x5IFNoaWVsZC4ifSx7ImlkIjoiZmVhdDpibHVlc2NyZWVuIiwiZXh0cmFLZXlzIjpbImZlYXQ6YXp1cmVnb3MiLCJmZWF0OmF6dXJlZ29zX2FyY2FuZSJdLCJuYW1lIjoiQmx1ZSBTY3JlZW4gb2YgRGVhdGgiLCJjYXQiOiJGZWF0cyIsInB0cyI6MjUsImRlc2MiOiJEZWZlYXQgQXp1cmVnb3Mgd2l0aCBhbiBBcmNhbmUgc3BlbGwuIn0seyJpZCI6ImNvdW50Om1hcmtzMTAwIiwibmFtZSI6Ik1hcmtlZCIsImNhdCI6IkxpZmV0aW1lIiwicHRzIjoxMCwiZGVzYyI6IkVhcm4gMTAwIG1hcmtzLiJ9LHsiaWQiOiJjb3VudDptYXJrczFrIiwibmFtZSI6IldlbGwgUGFpZCIsImNhdCI6IkxpZmV0aW1lIiwicHRzIjoyNSwiZGVzYyI6IkVhcm4gMSwwMDAgbWFya3MuIn0seyJpZCI6ImNvdW50Om1hcmtzMTBrIiwibmFtZSI6IlF1YXJ0ZXJtYXN0ZXIiLCJjYXQiOiJMaWZldGltZSIsInB0cyI6NTAsImRlc2MiOiJFYXJuIDEwLDAwMCBtYXJrcy4ifSx7ImlkIjoiY291bnQ6a2lsbHMxMGsiLCJuYW1lIjoiRXh0ZXJtaW5hdG9yIiwiY2F0IjoiTGlmZXRpbWUiLCJwdHMiOjEwLCJkZXNjIjoiU2xheSAxMCwwMDAgZW5lbWllcy4ifSx7ImlkIjoiY291bnQ6a2lsbHMxMDBrIiwibmFtZSI6IlNjb3VyZ2Ugb2YgQXplcm90aCIsImNhdCI6IkxpZmV0aW1lIiwicHRzIjoyNSwiZGVzYyI6IlNsYXkgMTAwLDAwMCBlbmVtaWVzLiJ9LHsiaWQiOiJjb3VudDpraWxsczFtIiwibmFtZSI6IkEgTWlsbGlvbiBEZWFkIiwiY2F0IjoiTGlmZXRpbWUiLCJwdHMiOjUwLCJkZXNjIjoiU2xheSAxLDAwMCwwMDAgZW5lbWllcy4ifSx7ImlkIjoiY291bnQ6Z29sZDVrIiwibmFtZSI6IlBvY2tldCBDaGFuZ2UiLCJjYXQiOiJMaWZldGltZSIsInB0cyI6MTAsImRlc2MiOiJDb2xsZWN0IDUsMDAwIGdvbGQuIn0seyJpZCI6ImNvdW50OmdvbGQ1MGsiLCJuYW1lIjoiVHJlYXN1cmUgSHVudGVyIiwiY2F0IjoiTGlmZXRpbWUiLCJwdHMiOjI1LCJkZXNjIjoiQ29sbGVjdCA1MCwwMDAgZ29sZC4ifSx7ImlkIjoiY291bnQ6Z3VhcmRpYW5zMTAwIiwibmFtZSI6IkxhaXIgUmFpZGVyIiwiY2F0IjoiTGlmZXRpbWUiLCJwdHMiOjEwLCJkZXNjIjoiU2xheSAxMDAgZ3VhcmRpYW5zLiJ9LHsiaWQiOiJjb3VudDpndWFyZGlhbnM1MDAiLCJuYW1lIjoiV2FyZGVuJ3MgQmFuZSIsImNhdCI6IkxpZmV0aW1lIiwicHRzIjoyNSwiZGVzYyI6IlNsYXkgNTAwIGd1YXJkaWFucy4ifSx7ImlkIjoiY291bnQ6Ym9zc2VzMTAwIiwibmFtZSI6IkJvc3MgSHVudGVyIiwiY2F0IjoiTGlmZXRpbWUiLCJwdHMiOjEwLCJkZXNjIjoiU2xheSAxMDAgYm9zc2VzLiJ9LHsiaWQiOiJjb3VudDpjYWNoZXMxMDAiLCJuYW1lIjoiQ2FjaGUgQ3JhY2tlciIsImNhdCI6IkxpZmV0aW1lIiwicHRzIjoxMCwiZGVzYyI6IkJ1eSAxMDAgY2FjaGVzLiJ9LHsiaWQiOiJjb3VudDpydW5zMTAiLCJuYW1lIjoiUmVndWxhciIsImNhdCI6IkxpZmV0aW1lIiwicHRzIjoxMCwiZGVzYyI6IlBsYXkgMTAgcnVucy4ifSx7ImlkIjoiY291bnQ6cnVuczEwMCIsIm5hbWUiOiJWZXRlcmFuIiwiY2F0IjoiTGlmZXRpbWUiLCJwdHMiOjEwLCJkZXNjIjoiUGxheSAxMDAgcnVucy4ifSx7ImlkIjoiY291bnQ6d2luczUwIiwibmFtZSI6IkNvbnF1ZXJvciIsImNhdCI6IkxpZmV0aW1lIiwicHRzIjoyNSwiZGVzYyI6IldpbiA1MCBydW5zLiJ9LHsiaWQiOiJjb29wOnRvZ2V0aGVyIiwibmFtZSI6IkJldHRlciBUb2dldGhlciIsImNhdCI6IkNvLW9wIiwicHRzIjoxMCwiZGVzYyI6IkNvbXBsZXRlIHlvdXIgZmlyc3Qgem9uZSB3aXRoIGF0IGxlYXN0IG9uZSBvdGhlciBwbGF5ZXIuIn0seyJpZCI6ImNvb3A6Zml2ZWtpbmQiLCJuYW1lIjoiRml2ZSBvZiBhIEtpbmQiLCJjYXQiOiJDby1vcCIsInB0cyI6MjUsImRlc2MiOiJDb21wbGV0ZSBhbnkgem9uZSBpbiBjby1vcCB3aXRoIGFsbCA1IHBsYXllcnMgdXNpbmcgdGhlIHNhbWUgY2xhc3MuIn0seyJpZCI6ImNvb3A6cGhvdG9zeW50aGVzaXMiLCJuYW1lIjoiUmVzdCBpbiBQaG90b3N5bnRoZXNpcyIsImNhdCI6IkNvLW9wIiwicHRzIjo1MCwiZGVzYyI6IkRlZmVhdCBLZWwnVGh1emFkIG9uIEhlcm9pYyBJSUkgaW4gY28tb3Agd2l0aCA1IERydWlkcywgYWxsIHRhbGVudGVkIGludG8gVHJhbnF1aWxpdHkuIFRyYW5xdWlsaXR5IG11c3QgZGVsaXZlciB0aGUga2lsbGluZyBibG93LiJ9LHsiaWQiOiJjb29wOmluc2FuZSIsIm5hbWUiOiJUaGUgSW5zYW5lIiwiY2F0IjoiQ28tb3AiLCJwdHMiOjUwLCJkZXNjIjoiU3Vydml2ZSBmb3IgNDAgbWludXRlcyBvciBsb25nZXIgaW4gTmF4eHJhbWFzIG9uIEhlcm9pYyBWIHdpdGggYXQgbGVhc3QgdHdvIG90aGVyIHBsYXllcnMuIn0seyJpZCI6ImNvb3A6bWF0Y2hpbmciLCJuYW1lIjoiTWF0Y2hpbmcgT3V0Zml0cyIsImNhdCI6IkNvLW9wIiwicHRzIjoyNSwiZGVzYyI6IldpbiBpbiBhIHBhcnR5IG9mIHRocmVlIG9yIG1vcmUsIGV2ZXJ5IGhlcm8gd2VhcmluZyB0aGUgc2FtZSBzZXQncyA4LXBpZWNlIGJvbnVzLiJ9LHsiaWQiOiJjb29wOnJhaWRuaWdodCIsIm5hbWUiOiJSYWlkIE5pZ2h0IiwiY2F0IjoiQ28tb3AiLCJwdHMiOjI1LCJkZXNjIjoiQmVhdCBIZXJvaWMgSUlJIG9yIGhhcmRlciBpbiBhIHBhcnR5IG9mIGZpdmUuIn0seyJpZCI6ImNvb3A6b2RkcyIsIm5hbWUiOiJBZ2FpbnN0IEFsbCBPZGRzIiwiY2F0IjoiQ28tb3AiLCJwdHMiOjUwLCJkZXNjIjoiQ29tcGxldGUgYW55IHpvbmUgb24gSGVyb2ljIElJSSBvciBoYXJkZXIgd2l0aCBhdCBsZWFzdCBvbmUgb3RoZXIgcGxheWVyLiJ9LHsiaWQiOiJjb29wOmJyb3RoZXJob29kIiwibmFtZSI6IlRoZSBCcm90aGVyaG9vZCBGYWxscyIsImNhdCI6IkNvLW9wIiwicHRzIjoyNSwiZGVzYyI6IkRlZmVhdCBFZHdpbiBWYW5DbGVlZiBpbiBjby1vcCB3aXRoIDUgcGxheWVycywgYWxsIHVzaW5nIGRpZmZlcmVudCBjbGFzc2VzLiJ9LHsiaWQiOiJjb29wOmJ1bXAiLCJuYW1lIjoiVGhpbmdzIFRoYXQgR28gQnVtcCBpbiB0aGUgTmlnaHQiLCJjYXQiOiJDby1vcCIsInB0cyI6MjUsImRlc2MiOiJDb21wbGV0ZSBEdXNrd29vZCB3aXRoIGF0IGxlYXN0IG9uZSBvdGhlciBwbGF5ZXIsIHdpdGhvdXQgYW55IHBsYXllciBkeWluZy4ifSx7ImlkIjoiY29vcDp0ZWFtIiwibmFtZSI6IkZvciB0aGUgVGVhbSIsImNhdCI6IkNvLW9wIiwicHRzIjoxMCwiZGVzYyI6IkNvbXBsZXRlIFdhcnNvbmcgR3VsY2ggYW5kIEFyYXRoaSBCYXNpbiwgZWFjaCB3aXRoIGF0IGxlYXN0IG9uZSBvdGhlciBwbGF5ZXIuIn0seyJpZCI6ImNvb3A6cGFjayIsIm5hbWUiOiJKdXJhc3NpYyBQYWNrIiwiY2F0IjoiQ28tb3AiLCJwdHMiOjI1LCJkZXNjIjoiQ29tcGxldGUgVW4nR29ybyBDcmF0ZXIgaW4gY28tb3Agd2l0aCA1IEh1bnRlcnMuIn0seyJpZCI6ImNvb3A6c21vb3RoaWUiLCJuYW1lIjoiSGFra2FyIFNtb290aGllIiwiY2F0IjoiQ28tb3AiLCJwdHMiOjUwLCJkZXNjIjoiRGVmZWF0IEhha2thciB3aXRoIDUgV2FycmlvcnMsIGFsbCB0YWxlbnRlZCBpbnRvIEJsYWRlc3Rvcm0uIFdoaXJsd2luZCBtdXN0IGRlbGl2ZXIgdGhlIGtpbGxpbmcgYmxvdy4ifSx7ImlkIjoiY29vcDpmcmFtZWRyb3BzIiwibmFtZSI6IkhvbHkgRnJhbWUgRHJvcHMiLCJjYXQiOiJDby1vcCIsInB0cyI6NTAsImRlc2MiOiJEZWZlYXQgSGlnaCBJbnF1aXNpdG9yIFdoaXRlbWFuZSBpbiBjby1vcCB3aXRoIDUgUGFsYWRpbnMsIGFsbCBoYXZpbmcgQ29uc2VjcmF0aW9uIGFzIHRoZWlyIGhpZ2hlc3QtcmFua2VkIHNwZWxsLiJ9LHsiaWQiOiJjb29wOmRyYWdvbnNsYXllcnMiLCJuYW1lIjoiRHJhZ29uc2xheWVycyIsImNhdCI6IkNvLW9wIiwicHRzIjoyNSwiZGVzYyI6IkRlZmVhdCBBenVyZWdvcyBhbmQgTmVmYXJpYW4sIGVhY2ggd2l0aCBhdCBsZWFzdCBvbmUgb3RoZXIgcGxheWVyLiJ9LHsiaWQiOiJjb29wOnVuYnJva2VuIiwibmFtZSI6IlVuYnJva2VuIENpcmNsZSIsImNhdCI6IkNvLW9wIiwicHRzIjo1MCwiZGVzYyI6IkNsZWFyIGFueSBIZXJvaWMgem9uZSBpbiBjby1vcCB3aXRob3V0IGEgc2luZ2xlIHBsYXllciB0YWtpbmcgbGV0aGFsIGRhbWFnZS4ifSx7ImlkIjoiY29vcDpzeW5lcmd5IiwibmFtZSI6IkNsYXNzIFN5bmVyZ3kiLCJjYXQiOiJDby1vcCIsInB0cyI6MjUsImRlc2MiOiJDbGVhciBhIHpvbmUgd2l0aCA1IGRpc3RpbmN0IGNsYXNzZXMuIn0seyJpZCI6ImNvb3A6c3BlZWRydW4iLCJuYW1lIjoiQmxpdHoiLCJjYXQiOiJDby1vcCIsInB0cyI6MjUsImRlc2MiOiJDbGVhciBhIHpvbmUgaW4gdW5kZXIgMTIgbWludXRlcyBpbiBjby1vcC4ifSx7ImlkIjoiaGVyb2ljOjEiLCJuYW1lIjoiSGVyb2ljIERlYnV0IiwiY2F0IjoiSGVyb2ljIiwicHRzIjoxMCwiZGVzYyI6IkJlYXQgSGVyb2ljIEkgaW4gYW55IHpvbmUuIn0seyJpZCI6Imhlcm9pYzpyZXNvbHZlIiwibmFtZSI6Ikhlcm9pYyBSZXNvbHZlIiwiY2F0IjoiSGVyb2ljIiwicHRzIjoyNSwiZGVzYyI6IkJlYXQgSGVyb2ljIElJSSBpbiBhbnkgem9uZS4ifSx7ImlkIjoiaGVyb2ljOmFsbHpvbmVzIiwibmFtZSI6Ikhlcm9pYyBBY3Jvc3MgQXplcm90aCIsImNhdCI6Ikhlcm9pYyIsInB0cyI6NTAsImRlc2MiOiJCZWF0IEhlcm9pYyBJSUkgaW4gZXZlcnkgem9uZSwgd2l0aCBhbnkgY2xhc3Nlcy4ifSx7ImlkIjoiaGVyb2ljOm5heHg1IiwibmFtZSI6IkNoYW1waW9uIG9mIE5heHhyYW1hcyAoSGVyb2ljKSIsImNhdCI6Ikhlcm9pYyIsInB0cyI6NTAsImRlc2MiOiJCZWF0IEhlcm9pYyBWIGluIE5heHhyYW1hcy4gT3BlbnMgdGhlIENydXNhZGVyIHdlYXBvbiBnbG93LiJ9LHsiaWQiOiJzdGFyczo0IiwibmFtZSI6IkJleW9uZCB0aGUgVmF1bHQiLCJjYXQiOiJIZXJvaWMiLCJwdHMiOjEwLCJkZXNjIjoiVXBncmFkZSBhIHBpZWNlIG9mIGdlYXIgdG8gNCBzdGFycy4ifSx7ImlkIjoic3RhcnM6NSIsIm5hbWUiOiJGaXZlIFN0YXJzIiwiY2F0IjoiSGVyb2ljIiwicHRzIjoyNSwiZGVzYyI6IlVwZ3JhZGUgYSBwaWVjZSBvZiBnZWFyIHRvIDUgc3RhcnMuIn0seyJpZCI6Imhlcm9pYzplbXBvd2VyZWQiLCJuYW1lIjoiRW1wb3dlcmVkIiwiY2F0IjoiSGVyb2ljIiwicHRzIjoyNSwiZGVzYyI6IkVtcG93ZXIgYW4gOC1waWVjZSBzZXQgYm9udXM6IG9uZSBzZXQncyBlaWdodCBhcm1vciBwaWVjZXMgYXQgNSBzdGFycy4ifSx7ImlkIjoiaGVyb2ljOnJhZGlhbnQiLCJuYW1lIjoiUmFkaWFudCBBcm1vcnkiLCJjYXQiOiJIZXJvaWMiLCJwdHMiOjUwLCJkZXNjIjoiRW1wb3dlciBhbiA4LXBpZWNlIHNldCBib251cyB3aXRoIGV2ZXJ5IGNsYXNzLiBPcGVucyB0aGUgRmllcnkgV2VhcG9uIGdsb3cuIn0seyJpZCI6Imhlcm9pYzp1bnBvbGlzaGVkIiwibmFtZSI6IlVucG9saXNoZWQiLCJjYXQiOiJIZXJvaWMiLCJwdHMiOjI1LCJkZXNjIjoiQmVhdCBIZXJvaWMgSUkgb3IgaGFyZGVyIHdpdGggbm8gcGllY2Ugb2YgZ2VhciBhYm92ZSAwIHN0YXJzLiJ9XQ=="))));
+
+  const TABS = ['All', 'Zones', 'Classes', 'Collection', 'Feats', 'Lifetime', 'Co-op', 'Heroic'];
+  const ALL_CLASS_IDS = ['1', '2', '3', '4', '5', '7', '8', '9', '11'];
+  const CLASS_NAMES = { '1': 'Warrior', '2': 'Paladin', '3': 'Hunter', '4': 'Rogue', '5': 'Priest', '7': 'Shaman', '8': 'Mage', '9': 'Warlock', '11': 'Druid' };
+
+  let currentCategory = 'All';
+  let achDraft = new Set();
+  let achatDraft = new Map();
+  let trackedPlain = null;
+
+  function isLoaded() {
+    return typeof Y !== 'undefined' && Array.isArray(Y.lines) && Y.lines.length > 0 && typeof Y.plain === 'string';
+  }
+
+  function parseAch(lines) {
+    const line = lines.find(l => l.startsWith('ach|'));
+    const set = new Set();
+    if (line) {
+      line.slice(4).split(',').filter(Boolean).forEach(id => set.add(id));
+    }
+    return set;
+  }
+
+  function parseAchat(lines) {
+    const map = new Map();
+    const line = lines.find(l => l.startsWith('achat|'));
+    if (line) {
+      line.slice(6).split(',').filter(Boolean).forEach(pair => {
+        const [id, ts] = pair.split('=');
+        if (id && ts) map.set(id, ts);
+      });
+    }
+    return map;
+  }
+
+  function syncFromImportIfNeeded() {
+    if (!isLoaded()) return false;
+    if (trackedPlain !== Y.plain) {
+      trackedPlain = Y.plain;
+      const lines = Y.plain.split(/\r?\n/);
+      achDraft = parseAch(lines);
+      achatDraft = parseAchat(lines);
+    }
+    return true;
+  }
+
+  function checkZoneCleared(clsId, zoneKey) {
+    // 1. If this class is currently displayed in the Zone Manager, check the live checkbox directly
+    const currentZmClass = document.getElementById('zm-class')?.value || String(window.Y?.cur || '');
+    if (String(clsId) === String(currentZmClass)) {
+      const box = document.querySelector(`#zm-grid input[data-zone="${zoneKey}"]`);
+      if (box) return box.checked;
+    }
+
+    // 2. Check window.zoneState if exposed
+    if (typeof window.zoneState === 'function') {
+      const state = window.zoneState(clsId);
+      if (state && state.beat) return state.beat.has(zoneKey);
+    }
+
+    // 3. Check live Y.lines (draft) before falling back to Y.plain (imported)
+    const source = (typeof Y !== 'undefined' && Array.isArray(Y.lines)) ? Y.lines : (Y?.plain ? Y.plain.split(/\r?\n/) : []);
+    const match = source.find(l => l.startsWith(`beat|${clsId}|`));
+    if (match) {
+      return match.split('|').slice(2).join('|').split(',').includes(zoneKey);
+    }
+
+    return false;
+  }
+
+  function getPrerequisiteError(achievement) {
+    if (achievement.req) {
+      const cleared = checkZoneCleared(achievement.req.cls, achievement.req.zone);
+      if (!cleared) {
+        return `Cannot unlock: "${achievement.req.label}" must be marked as Cleared in the Zone Manager first.`;
+      }
+    }
+    if (achievement.reqAll) {
+      const missing = ALL_CLASS_IDS.filter(clsId => !checkZoneCleared(clsId, achievement.reqAll));
+      if (missing.length > 0) {
+        const classNames = missing.map(id => CLASS_NAMES[id] || `Class ${id}`).join(', ');
+        return `Cannot unlock: Requires ${achievement.reqAll.toUpperCase()} cleared on all classes. Missing: ${classNames}.`;
+      }
+    }
+    return null;
+  }
+
+  function writeAchToYLines() {
+    if (!isLoaded()) return;
+    const sorted = [...achDraft].sort();
+    const newAchLine = 'ach|' + sorted.join(',');
+
+    const now = Math.floor(Date.now() / 1000);
+    const timePairs = [];
+
+    // Ensure every key in achDraft has an entry in achatDraft
+    sorted.forEach(id => {
+      let ts = achatDraft.get(id);
+      if (!ts) {
+        ts = now;
+        achatDraft.set(id, ts);
+      }
+      timePairs.push(`${id}=${ts}`);
+    });
+
+    const newAchatLine = 'achat|' + timePairs.join(',');
+
+    const updateOrInsert = (prefix, content) => {
+      const idx = Y.lines.findIndex(l => l.startsWith(prefix));
+      if (idx >= 0) {
+        Y.lines[idx] = content;
+      } else {
+        const at = Y.lines.length && Y.lines[Y.lines.length - 1] === '' ? Y.lines.length - 1 : Y.lines.length;
+        Y.lines.splice(at, 0, content);
+      }
+    };
+
+    updateOrInsert('ach|', newAchLine);
+    updateOrInsert('achat|', newAchatLine);
+
+    if (typeof n === 'function') n();
+  }
+
+  function renderTabs() {
+    tabsBar.innerHTML = TABS.map(tab => 
+      `<button type="button" class="ach-tab-btn" data-cat="${tab}" aria-selected="${tab === currentCategory}">${tab}</button>`
+    ).join('');
+
+    tabsBar.querySelectorAll('.ach-tab-btn').forEach(btn => {
+      btn.onclick = () => {
+        currentCategory = btn.dataset.cat;
+        $('ach-btn-toggle-cat').textContent = currentCategory === 'All' ? 'Unlock All Listed' : `Unlock All in ${currentCategory}`;
+        renderTabs();
+        renderGrid();
+      };
+    });
+  }
+
+  function renderGrid() {
+    syncFromImportIfNeeded();
+    const visible = CATALOG.filter(a => currentCategory === 'All' || a.cat === currentCategory);
+
+    let unlockedCount = 0;
+    let unlockedPts = 0;
+    CATALOG.forEach(a => {
+      if (achDraft.has(a.id)) {
+        unlockedCount++;
+        unlockedPts += a.pts;
+      }
+    });
+
+    countText.textContent = `${unlockedCount} / ${CATALOG.length}`;
+    ptsText.textContent = ` · ${unlockedPts} / 3000 pts`;
+
+    grid.innerHTML = visible.map(a => {
+      const isUnlocked = achDraft.has(a.id);
+      return `
+        <article class="ach-card ${isUnlocked ? 'unlocked' : ''}" data-id="${a.id}">
+          <div class="ach-card-top">
+            <span class="ach-title">${a.name}</span>
+            <span class="ach-pts">+${a.pts}</span>
+          </div>
+          <div class="ach-desc">${a.desc}</div>
+          <div class="ach-key">${a.id}</div>
+        </article>
+      `;
+    }).join('');
+
+    grid.querySelectorAll('.ach-card').forEach(card => {
+      card.onclick = () => {
+        if (!isLoaded()) return;
+        const id = card.dataset.id;
+        const item = CATALOG.find(a => a.id === id);
+        const keysToToggle = [id, ...(item?.extraKeys || [])];
+
+        if (achDraft.has(id)) {
+          keysToToggle.forEach(k => {
+            achDraft.delete(k);
+            achatDraft.delete(k);
+          });
+          statusText.style.color = 'var(--mute)';
+          statusText.textContent = `Removed achievement: ${item?.name || id}`;
+        } else {
+          const errorMsg = getPrerequisiteError(item);
+          if (errorMsg) {
+            statusText.style.color = 'var(--bad)';
+            statusText.textContent = `⚠ ${errorMsg}`;
+            if (typeof r === 'function') r(errorMsg, 'warn');
+            return;
+          }
+
+          const now = Math.floor(Date.now() / 1000);
+          keysToToggle.forEach(k => {
+            achDraft.add(k);
+            achatDraft.set(k, now);
+          });
+          statusText.style.color = 'var(--good)';
+          statusText.textContent = `Unlocked: ${item?.name || id}`;
+        }
+
+        writeAchToYLines();
+        renderGrid();
+      };
+    });
+  }
+
+  $('ach-btn-toggle-cat').onclick = () => {
+    if (!isLoaded()) return;
+    const now = Math.floor(Date.now() / 1000);
+    const visible = CATALOG.filter(a => currentCategory === 'All' || a.cat === currentCategory);
+    let skipped = 0;
+
+    visible.forEach(a => {
+      if (getPrerequisiteError(a)) {
+        skipped++;
+        return;
+      }
+      const keys = [a.id, ...(a.extraKeys || [])];
+      keys.forEach(k => {
+        achDraft.add(k);
+        if (!achatDraft.has(k)) achatDraft.set(k, now);
+      });
+    });
+
+    writeAchToYLines();
+    renderGrid();
+    if (skipped > 0) {
+      statusText.style.color = 'var(--accent)';
+      statusText.textContent = `Unlocked available in ${currentCategory}. Skipped ${skipped} requiring uncleared zones.`;
+    } else {
+      statusText.style.color = 'var(--good)';
+      statusText.textContent = `Unlocked all achievements in ${currentCategory}.`;
+    }
+  };
+
+  $('ach-btn-all').onclick = () => {
+    if (!isLoaded()) return;
+    const now = Math.floor(Date.now() / 1000);
+    let skipped = 0;
+
+    CATALOG.forEach(a => {
+      if (getPrerequisiteError(a)) {
+        skipped++;
+        return;
+      }
+      const keys = [a.id, ...(a.extraKeys || [])];
+      keys.forEach(k => {
+        achDraft.add(k);
+        if (!achatDraft.has(k)) achatDraft.set(k, now);
+      });
+    });
+
+    writeAchToYLines();
+    renderGrid();
+    if (skipped > 0) {
+      statusText.style.color = 'var(--accent)';
+      statusText.textContent = `Unlocked available achievements. Skipped ${skipped} requiring uncleared zones.`;
+    } else {
+      statusText.style.color = 'var(--good)';
+      statusText.textContent = 'Unlocked all 125 achievements (3,000 pts). Export save below.';
+    }
+  };
+
+  $('ach-btn-reset').onclick = () => {
+    if (!isLoaded()) return;
+    const lines = Y.plain.split(/\r?\n/);
+    achDraft = parseAch(lines);
+    achatDraft = parseAchat(lines);
+    writeAchToYLines();
+    renderGrid();
+    statusText.style.color = 'var(--mute)';
+    statusText.textContent = 'Restored achievements to imported save state.';
+  };
+
+  const bridge = window.__AS_EDITOR_BRIDGE;
+  if (bridge && typeof bridge.snapshot === 'function') {
+    const origSnapshot = bridge.snapshot.bind(bridge);
+    bridge.snapshot = function () {
+      const snap = origSnapshot();
+      if (!snap || !isLoaded()) return snap;
+      const origAchLine = Y.plain.split(/\r?\n/).find(l => l.startsWith('ach|')) || '';
+      const liveAchLine = Y.lines.find(l => l.startsWith('ach|')) || '';
+      if (origAchLine !== liveAchLine && !snap.areas.includes('Achievements')) {
+        snap.areas.push('Achievements');
+      }
+      return snap;
+    };
+  }
+
+  renderTabs();
+  renderGrid();
+
+  setInterval(() => {
+    if (isLoaded() && trackedPlain !== Y.plain) {
+      syncFromImportIfNeeded();
+      renderGrid();
+    }
+  }, 500);
 })();
 </script>
 

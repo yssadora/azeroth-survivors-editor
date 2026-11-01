@@ -4,6 +4,11 @@
 
 A free, unofficial browser-based save editor for **Azeroth Survivors**. Import a `.sav` file, edit your save, and download a modified `.sav` file. Processing happens locally in your browser.
 
+## What changed in v1.5.6
+
+- **Achievement Unlocker:** Add an achievement unlocker. You can either unlock all achievements at once or individually. Also locks the Scarab and other champion achievements with a warning to clear the zone first with the zone manager for the specific class.
+
+
 ## What changed in v1.5.5
 
 - **Talent Tree Fixes:** Fix talent trees to match what is in game on current v0.138.0

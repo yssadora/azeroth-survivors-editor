@@ -1,8 +1,22 @@
-# Azeroth Survivors Save Editor v1.5.3
+# Azeroth Survivors Save Editor v1.5.6
 
 **[Open the editor](https://yssadora.github.io/azeroth-survivors-editor/)** · [Source code](https://github.com/yssadora/azeroth-survivors-editor)
 
 A free, unofficial browser-based save editor for **Azeroth Survivors**. Import a `.sav` file, edit your save, and download a modified `.sav` file. Processing happens locally in your browser.
+
+## What changed in v1.5.6
+
+- **Achievement Unlocker:** Add an achievement unlocker. You can either unlock all achievements at once or individually. Also locks the Scarab and other champion achievements with a warning to clear the zone first with the zone manager for the specific class.
+
+
+## What changed in v1.5.5
+
+- **Talent Tree Fixes:** Fix talent trees to match what is in game on current v0.138.0
+
+## What changed in v1.5.4
+
+- **Heroic Items/Star Items:** Added the ability to select heroic stars or tiers for each individual item without affecting the zone. Can add in increments of 1 up to 5 for each item.
+
 
 ## What changed in v1.5.3
 

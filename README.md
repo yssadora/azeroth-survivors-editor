@@ -1,4 +1,4 @@
-# Azeroth Survivors Save Editor v1.5.5
+# Azeroth Survivors Save Editor v1.5.6
 
 **[Open the editor](https://yssadora.github.io/azeroth-survivors-editor/)** · [Source code](https://github.com/yssadora/azeroth-survivors-editor)
 
